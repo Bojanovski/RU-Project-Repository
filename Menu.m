@@ -22,7 +22,7 @@ function varargout = Menu(varargin)
 
 % Edit the above text to modify the response to help Menu
 
-% Last Modified by GUIDE v2.5 15-Jan-2016 12:11:04
+% Last Modified by GUIDE v2.5 15-Jan-2016 15:57:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -177,6 +177,11 @@ function pushbutton2_Callback(hObject, eventdata, handles)
         fullPath = strcat(filename, '\\depth_out.avi');
     elseif get(handles.radiobutton3,'Value') == 1
         fullPath = strcat(filename, '\\P_color_out.avi');
+        folderNotExists  = (exist(fullfile(fullPath), 'file') ~= 7);
+        if folderNotExists
+            msgbox('The recording you have selected has not been processed yet!', 'Error!');
+            return;
+        end
     end
     disp(strcat('Playing: ', fullPath));
     readerobj = VideoReader(fullPath, 'tag', 'myreader1');
@@ -275,3 +280,12 @@ function pushbutton3_Callback(hObject, eventdata, handles)
     ProcessedPNG2AVI(picNum/duration, workingDir);
     disp('Done processing.');
     
+
+
+% --- Executes on button press in checkbox1.
+function checkbox1_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox1
