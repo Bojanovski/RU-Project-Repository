@@ -22,7 +22,7 @@ function varargout = Menu(varargin)
 
 % Edit the above text to modify the response to help Menu
 
-% Last Modified by GUIDE v2.5 07-Dec-2015 02:39:22
+% Last Modified by GUIDE v2.5 15-Jan-2016 12:11:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -175,6 +175,8 @@ function pushbutton2_Callback(hObject, eventdata, handles)
     fullPath = strcat(filename, '\\color_out.avi');
     if get(handles.radiobutton2,'Value') == 1
         fullPath = strcat(filename, '\\depth_out.avi');
+    elseif get(handles.radiobutton3,'Value') == 1
+        fullPath = strcat(filename, '\\P_color_out.avi');
     end
     disp(strcat('Playing: ', fullPath));
     readerobj = VideoReader(fullPath, 'tag', 'myreader1');
@@ -225,8 +227,51 @@ end
 function radiobutton1_Callback(hObject, eventdata, handles)
     set(handles.radiobutton1,'Value',1)
     set(handles.radiobutton2,'Value',0)
+    set(handles.radiobutton3,'Value',0)
 
 % --- Executes on button press in radiobutton2. Depth
 function radiobutton2_Callback(hObject, eventdata, handles)
     set(handles.radiobutton1,'Value',0)
     set(handles.radiobutton2,'Value',1)
+    set(handles.radiobutton3,'Value',0)
+    
+% --- Executes on button press in radiobutton2. Depth
+function radiobutton3_Callback(hObject, eventdata, handles)
+    set(handles.radiobutton1,'Value',0)
+    set(handles.radiobutton2,'Value',0)
+    set(handles.radiobutton3,'Value',1)
+
+
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+    index_selected = get(handles.listbox1,'Value');
+    file_list = get(handles.listbox1,'String');
+    workingDir = file_list{index_selected}; % Item selected in list box
+    imageNamesColor = dir(fullfile(workingDir, 'images','RGB_*.png'));
+    imageNamesDepth = dir(fullfile(workingDir, 'images','Depth_*.png'));
+    imageNamesColor = {imageNamesColor.name}';
+    imageNamesDepth = {imageNamesDepth.name}';
+    
+    % Depth has the same number of pictures.
+    picNum = length(imageNamesColor);
+    
+    % Process and save images.
+    disp('Processing images.');
+    for i=1:picNum
+        fullPathColor = strcat(strcat(workingDir, '\\images\\'), imageNamesColor{i});
+        fullPathDepth = strcat(strcat(workingDir, '\\images\\'), imageNamesDepth{i});
+        frameC = imread(fullPathColor);
+        frameD = imread(fullPathDepth);
+        % processed frame
+        frameP = DrawFaceRectangle(frameC, frameD);
+        imwrite(frameP, strcat(strcat(strcat(workingDir, '\\images\\P_'), imageNamesColor{i}),'.png'));
+        %disp(strcat('Processed', int2str(i)))
+    end
+    disp('Making video file.');
+    
+    colorVid = VideoReader(strcat(workingDir, '\\color_out.avi'));
+    info = get(colorVid);
+    duration = info.Duration;
+    ProcessedPNG2AVI(picNum/duration, workingDir);
+    disp('Done processing.');
+    
