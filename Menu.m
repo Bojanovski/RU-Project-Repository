@@ -253,7 +253,7 @@ function pushbutton3_Callback(hObject, eventdata, handles)
     file_list = get(handles.listbox1,'String');
     workingDir = file_list{index_selected}; % Item selected in list box
     imageNamesColor = dir(fullfile(workingDir, 'images','RGB_*.png'));
-    imageNamesDepth = dir(fullfile(workingDir, 'images','Depth_*.png'));
+    imageNamesDepth = dir(fullfile(workingDir, 'images','Depth_RGB_*.png'));
     imageNamesColor = {imageNamesColor.name}';
     imageNamesDepth = {imageNamesDepth.name}';
     

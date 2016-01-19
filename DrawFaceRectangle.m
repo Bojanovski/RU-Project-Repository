@@ -5,10 +5,25 @@ function retColor = DrawFaceRectangle(color, depth)
     
     %Returns Bounding Box values based on number of objects
     BB = step(FDetect,color);
-    %disp(BB);
-    %BB = int32([4, 4, 8, 8]);
+    widthHeightRectangle = 70;
+    workspaceWithSVM = load('WorkspaceWithSVM.mat');
+    svm = getfield(workspaceWithSVM, 'svm');
+    retColor = color;
     
-    
-    retColor = insertShape(color, 'rectangle', BB);
-    %retColor = insertShape(color, 'rectangle', BB, 'LineWidth', 5);
+    for i=1:size(BB,1)
+        %fill positives
+        imCrop = imcrop(depth, [round(BB(i,1) - 0.2*BB(i,3)) round(BB(i,2) - 0.2*BB(i,4)) BB(i,3) BB(i,4)]); %%PAZI NA OVAJ 0.2 ispravak
+        frameDCroped = imresize(imCrop, [widthHeightRectangle widthHeightRectangle]);
 
+        red = double(frameDCroped(:,:,1));
+        green = double(frameDCroped(:,:,2));
+        sum = red*255 + green;
+        features = reshape(sum, 1, []); %plavi kanal je sve u 0 tako da ga ne citamo
+
+        result = 1;
+        
+        if (result == 1)
+            retColor = insertShape(retColor, 'rectangle', BB(i,:));
+            %retColor = insertShape(color, 'rectangle', BB, 'LineWidth', 5);
+        end
+    end
