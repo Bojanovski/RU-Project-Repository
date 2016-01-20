@@ -1,5 +1,5 @@
 
-function retColor = DrawFaceRectangle(color, depth)
+function retColor = DrawFaceRectangle(color, depth, showFalsePositives)
     
     FDetect = vision.CascadeObjectDetector;
     
@@ -23,9 +23,11 @@ function retColor = DrawFaceRectangle(color, depth)
         result = svmclassify(svm, features);
         
         if (result == 1)
-            retColor = insertShape(retColor, 'rectangle', BB(i,:), 'color', 'green');
+            %retColor = insertShape(retColor, 'rectangle', BB(i,:), 'color', 'green');
+            retColor = DrawBorder(retColor, BB(i,:), 4, 'green');
             %retColor = insertShape(color, 'rectangle', BB, 'LineWidth', 5);
-        else
-            retColor = insertShape(retColor, 'rectangle', BB(i,:), 'color', 'red');
+        elseif (showFalsePositives)
+            retColor = DrawBorder(retColor, BB(i,:), 4, 'red');
+            %retColor = insertShape(retColor, 'rectangle', BB(i,:), 'color', 'red');
         end
     end

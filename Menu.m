@@ -177,8 +177,10 @@ function pushbutton2_Callback(hObject, eventdata, handles)
         fullPath = strcat(filename, '\\depth_out.avi');
     elseif get(handles.radiobutton3,'Value') == 1
         fullPath = strcat(filename, '\\P_color_out.avi');
-        folderNotExists  = (exist(fullfile(fullPath), 'file') ~= 7);
-        if folderNotExists
+        disp(fullPath)
+        if exist(fullPath, 'file')
+            
+        else
             msgbox('The recording you have selected has not been processed yet!', 'Error!');
             return;
         end
@@ -268,7 +270,7 @@ function pushbutton3_Callback(hObject, eventdata, handles)
         frameC = imread(fullPathColor);
         frameD = imread(fullPathDepth);
         % processed frame
-        frameP = DrawFaceRectangle(frameC, frameD);
+        frameP = DrawFaceRectangle(frameC, frameD, get(handles.checkbox1, 'Value'));
         imwrite(frameP, strcat(strcat(strcat(workingDir, '\\images\\P_'), imageNamesColor{i}),'.png'));
         %disp(strcat('Processed', int2str(i)))
     end
